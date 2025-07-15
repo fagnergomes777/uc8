@@ -1,12 +1,16 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
-    formContainer:{
-        width: '100%',
-        height: '100%',
-        padding: 10,
-        backgroundColor: '#fff',
-        alignItems: 'center'
+    formContainer: {
+      width: "100%",
+      height: "100%",
+      padding: 10,
+      backgroundColor: "#fff",
+      alignItems: "center",
+      marginTop: 30,
+      borderTopLeftRadius: 30,
+      borderTopRightRadius: 30,
+      bottom: 0,
     },
     form:{
         width: '100%',
@@ -40,6 +44,10 @@ const styles = StyleSheet.create({
     buttonCalculatorText:{
         fontSize: 20,
         color: '#fff',
+    },
+    errorMessage:{
+        color: '#ff0043',
+        paddingLeft: 20,
     }
 
 })
