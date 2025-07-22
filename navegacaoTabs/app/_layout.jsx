@@ -12,6 +12,11 @@ export default function RootLayout() {
           headerTitleStyle: { fontWeight: "bold" },
         }}
       >
+        <Stack.Screen
+          name="products/index"
+          options={{ headerTitle: "Produtos" }}
+        />
+
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </>
