@@ -6,7 +6,7 @@ export default function Home(){
   return(
     <View style={styles.container}>
       <View style={styles.subContainer}>
-        <Image style={styles.image} source={require('../assets/images/pokebola.jpg')}/>
+        <Image style={styles.image} source={require('../assets/images/pokebola.png')}/>
 
             <Text style={styles.title}>Bem-vindo ao App de Pokemon</Text>
 

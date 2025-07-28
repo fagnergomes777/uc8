@@ -4,7 +4,7 @@ export default StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fffbe6",
-    padding: 16,
+    padding: 20,
   },
   image: {
     width: "100%",
@@ -37,7 +37,7 @@ export default StyleSheet.create({
     elevation: 8,
   },
   buttonView: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 25,
   },
   button: {
@@ -55,5 +55,24 @@ export default StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
+  },
+  avatar: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    marginRight: 12,
+  },
+  card: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#ffe4b5",
+    padding: 10,
+    marginVertical: 8,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
 });
