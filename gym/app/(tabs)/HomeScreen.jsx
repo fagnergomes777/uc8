@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -9,43 +9,50 @@ import {
   TouchableOpacity,
   Modal,
   Animated,
-  Easing
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+  Easing,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
-export default function HomeScreen({ theme }) {
-  const [nome, setNome] = useState('');
+export default function HomeScreen({ theme, navigation }) {
+  const [nome, setNome] = useState("");
   const [frequencia, setFrequencia] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [itemSelecionado, setItemSelecionado] = useState(null);
 
-  // Controle da animação
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
 
   const iniciarAnimacao = () => {
     scaleAnim.setValue(0.5);
     opacityAnim.setValue(0);
+
     Animated.parallel([
       Animated.timing(scaleAnim, {
         toValue: 1,
         duration: 250,
         easing: Easing.out(Easing.ease),
-        useNativeDriver: true
+        useNativeDriver: true,
       }),
+
       Animated.timing(opacityAnim, {
         toValue: 1,
         duration: 250,
-        useNativeDriver: true
-      })
+        useNativeDriver: true,
+      }),
     ]).start();
   };
 
   const registrarPresenca = () => {
-    if (nome.trim() === '') return;
-    const novoRegistro = { id: Date.now().toString(), nome };
+    if (nome.trim() === "") return;
+
+    const nomeAluno = nome.trim();
+
+    const novoRegistro = { id: Date.now().toString(), nome: nomeAluno };
+
     setFrequencia([novoRegistro, ...frequencia]);
-    setNome('');
+    setNome("");
+
+    navigation.navigate("CadastroEndereco", { alunoNome: nomeAluno });
   };
 
   const confirmarExclusao = (item) => {
@@ -63,11 +70,11 @@ export default function HomeScreen({ theme }) {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text }]}>
-        Registro de Frequência da Academia
+        Registro de Frequencia da Academia
       </Text>
 
       <TextInput
-        style={[styles.input, { backgroundColor: '#fff', color: '#000' }]}
+        style={[styles.input, { backgroundColor: "#fff", color: "#000" }]}
         placeholder="Digite o nome do aluno"
         value={nome}
         onChangeText={setNome}
@@ -78,11 +85,10 @@ export default function HomeScreen({ theme }) {
       <FlatList
         data={frequencia}
         keyExtractor={(item) => item.id}
-        style={{ marginTop: 20, width: '100%' }}
         renderItem={({ item }) => (
           <View style={styles.itemContainer}>
             <Text style={[styles.itemText, { color: theme.text }]}>
-              ✅ {item.nome}
+              {item.nome}
             </Text>
             <TouchableOpacity onPress={() => confirmarExclusao(item)}>
               <Ionicons name="trash" size={22} color="red" />
@@ -92,21 +98,27 @@ export default function HomeScreen({ theme }) {
       />
 
       {/* Modal com animação */}
+
       <Modal
         visible={modalVisible}
         transparent
-        animationType="none" // controlamos manualmente
+        animationType="none"
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalOverlay}>
           <Animated.View
             style={[
               styles.modalContent,
-              { backgroundColor: theme.background, transform: [{ scale: scaleAnim }], opacity: opacityAnim }
+              {
+                backgroundColor: theme.background,
+                transform: [{ scale: scaleAnim }],
+                opacity: opacityAnim,
+              },
             ]}
           >
             <Text style={[styles.modalText, { color: theme.text }]}>
-              Tem certeza que deseja excluir &lquot {itemSelecionado?.nome} &rquot ?
+              Tem certeza que Deseja excluir &#34;{itemSelecionado?.nome}&#34;
+              ?
             </Text>
             <View style={styles.modalButtons}>
               <Button title="Cancelar" onPress={() => setModalVisible(false)} />
@@ -119,16 +131,18 @@ export default function HomeScreen({ theme }) {
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding:20,
   },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 15,
-    textAlign: 'center',
+  title:{
+    fontSize:18,
+    fontWeight: "bold",
+    marginVertical: 50,
+  
+    textAlign: "center",
   },
   input: {
     padding: 10,
@@ -137,23 +151,23 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   itemContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     justifyContent: 'space-between',
     paddingVertical: 10,
     borderBottomWidth: 0.5,
     borderColor: '#ccc',
     alignItems: 'center',
   },
-  itemText: {
+  itemText:{
     fontSize: 16,
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
+    backgroundColor: "rgba(0,0,0,0.5)",
     justifyContent: 'center',
     alignItems: 'center',
   },
-  modalContent: {
+  modalContent:{
     width: '80%',
     padding: 20,
     borderRadius: 10,
@@ -165,6 +179,6 @@ const styles = StyleSheet.create({
   },
   modalButtons: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-});
+    justifyContent: 'space-around'
+  }
+})
