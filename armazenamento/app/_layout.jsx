@@ -7,6 +7,7 @@ import {
   FlatList,
   Alert,
   Keyboard,
+  Modal,
 } from "react-native";
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,6 +26,11 @@ export default function App() {
   const [tempPin, setTempPin] = useState("");
   const [nota, setNota] = useState("");
   const [notas, setNotas] = useState([]);
+
+  // estados para edição
+  const [editing, setEditing] = useState(false);
+  const [editId, setEditId] = useState(null);
+  const [editText, setEditText] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -98,7 +104,23 @@ export default function App() {
     }
   };
 
+  // importar backup
+  const importBackup = async () => {
+    try {
+      const path = FileSystem.documentDirectory + "notes-backup.json";
+      const content = await FileSystem.readAsStringAsync(path);
 
+      const parsed = JSON.parse(content);
+      if (Array.isArray(parsed)) {
+        persistNotas(parsed);
+        Alert.alert("Backup restaurado", "Suas notas foram recuperadas.");
+      } else {
+        Alert.alert("Erro", "Backup inválido.");
+      }
+    } catch (_error) {
+      Alert.alert("Erro", "Não foi possível importar o backup.");
+    }
+  };
 
   const addNota = () => {
     const text = nota.trim();
@@ -107,6 +129,28 @@ export default function App() {
     persistNotas([nova, ...notas]);
     setNota("");
     Keyboard.dismiss();
+  };
+
+  // iniciar edição
+  const startEdit = (id, text) => {
+    setEditId(id);
+    setEditText(text);
+    setEditing(true);
+  };
+
+  // salvar edição
+  const saveEdit = () => {
+    if (!editText.trim()) {
+      Alert.alert("Erro", "A nota não pode ficar vazia.");
+      return;
+    }
+    const updated = notas.map((n) =>
+      n.id === editId ? { ...n, text: editText.trim() } : n
+    );
+    persistNotas(updated);
+    setEditing(false);
+    setEditId(null);
+    setEditText("");
   };
 
   const handlePinSubmit = async () => {
@@ -221,9 +265,9 @@ export default function App() {
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ gap: 8, paddingVertical: 8 }}
         renderItem={({ item }) => (
-          <View style={styles.card}>
+          <TouchableOpacity onPress={() => startEdit(item.id, item.text)} style={styles.card}>
             <Text style={styles.cardText}>{item.text}</Text>
-          </View>
+          </TouchableOpacity>
         )}
         ListEmptyComponent={
           <Text style={styles.muted}>Nenhuma nota ainda.</Text>
@@ -235,7 +279,6 @@ export default function App() {
           <Text style={styles.buttonText}>Limpar tudo</Text>
         </TouchableOpacity>
 
-
         <TouchableOpacity onPress={exportBackup} style={[styles.button,styles.secondary]}>
           <Text style={styles.buttonText}>Exportar Backup</Text>
         </TouchableOpacity>
@@ -244,11 +287,33 @@ export default function App() {
           <Text style={styles.buttonText}>Mostrar Backup</Text>
         </TouchableOpacity>
 
+        <TouchableOpacity onPress={importBackup} style={[styles.button,styles.secondary]}>
+          <Text style={styles.buttonText}>Importar Backup</Text>
+        </TouchableOpacity>
       </View>
 
-
-
-
+      {/* Modal de edição */}
+      <Modal visible={editing} transparent animationType="slide">
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.title}>Editar Nota</Text>
+            <TextInput
+              style={styles.input}
+              value={editText}
+              onChangeText={setEditText}
+              placeholder="Edite sua nota..."
+            />
+            <View style={styles.row}>
+              <TouchableOpacity style={[styles.button, styles.secondary]} onPress={() => setEditing(false)}>
+                <Text style={styles.buttonText}>Cancelar</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.button} onPress={saveEdit}>
+                <Text style={styles.buttonText}>Salvar</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
