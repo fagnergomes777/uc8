@@ -22,7 +22,7 @@ export default function HomeScreen({ theme, fontScale, bigTargets }) {
         it.id === id ? { ...it, done: !it.done } : it
       );
 
-      const changed = updated.find((it) => it.id === id);
+      const changed = updated.find((it) => it.id === it);
 
       AccessibilityInfo.announceForAccessibility(
         `${changed.text} marcado como ${
@@ -38,17 +38,50 @@ export default function HomeScreen({ theme, fontScale, bigTargets }) {
     const total = items.length;
     const msg = `Você concluiu ${done} de ${total} tarefas.`;
 
-    Speech.speak(msg, {language: "pt-BR"});
+    Speech.speak(msg, { language: "pt-BR" });
 
     AccessibilityInfo.announceForAccessibility(msg);
-    
-  }
+  };
 
-    return (
-        
-    )
+  return (
+    <View style={{ gap: 16 }}>
+      <View
+        style={styles.card}
+        accessible
+        accessibilityLabel="Lista de Tarefas de acessibilidade"
+      >
+        <Text>CheckList de Acessibilidade</Text>
 
+        {items.map((it) => {
+          const checked = it.done;
+          return (
+            <Pressable
+              key={it.id}
+              onPress={() => toggle(it.id)}
+              style={styles.item}
+              accessibilityLabel={it.text}
+              accessibilityRole="checkbox"
+              accessibilityState={{ checked }}
+              accessibilityHint="Toque para alternar concluído ou pendente."
+            >
+              <View style={[styles.checkbox, checked && styles.checkboxChecked]} />
+              
+              <Text style={styles.itemText}>{it.text}</Text>
+            </Pressable>
+          );
+        })}
 
+        <Pressable
+          onPress={announceSumary}
+          style={styles.announceBtn}
+          accessibilityRole="button"
+          accessibilityLabel="Ler resumo em voz alta"
+          accessibilityHint="Lê em voz alta e envia ao leitor de tela quantas tarefas foram concluídas" 
+        >
+          <Text style={styles.announceText}> 🔈Ler Resumo</Text>
+        </Pressable>
 
-
+      </View>
+    </View>
+  );
 }
