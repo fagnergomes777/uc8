@@ -1,15 +1,15 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
   Pressable,
-  AcessibilityInfo,
+  AccessibilityInfo,
   AppState,
   findNodeHandle,
-} from 'react-native';
+} from "react-native";
 import {makeTheme} from "../styles/theme";
 import {makeGlobalStyles} from "../styles/globalStyles";
 
 import HomeScreen from "./HomeScreen";
-import LockScreen from "./LockScreen"
+import LockScreen from "./LockScreen";
 import SettingsScreen from "./SettingsScreen";

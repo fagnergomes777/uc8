@@ -1,7 +1,5 @@
-
-
-import React, {use, useEffect, useState} from "react";
-import {View, Text, Alert, AccessibilityInfo} from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Alert, AccessibilityInfo } from "react-native";
 import * as LocalAuthentication from "expo-local-authentication";
 
 import BigButton from "../components/BigButton";
@@ -9,32 +7,32 @@ import BigButton from "../components/BigButton";
 import { makeLockStyles } from "../styles/lockStyles";
 
 export default function LockScreen({ theme, fontScale, bigTargets, onUnlock }) {
-    
-    const styles = makeLockStyles({ theme, fontScale, bigTargets })
+  const styles = makeLockStyles({ theme, fontScale, bigTargets });
 
-    const [available, setAvailable] = useState(null);
-     
-    useEffect(() => {
-        (async () => {
-            const hasHardware = await LocalAuthentication.hasHardwareAsync();
+  const [available, setAvailable] = useState(null);
 
-            const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+  useEffect(() => {
+    (async () => {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
 
-            setAvailable(hasHardware && isEnrolled);
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-            AccessibilityInfo.announceForAccessibility("Tela bloqueada. Use sua digital ou encolha entrar sem digital");
-        })();
-     }, []);
+      setAvailable(hasHardware && isEnrolled);
 
-     const handleAuth = async () => {
-        try{
-            const res = await LocalAuthentication.authenticateAsync({
-                promptMessage: "Desbloquear com biometria",
-                cancelLabel: "Cancelar",
-                disableDeviceFallback: true,
-            });
+      AccessibilityInfo.announceForAccessibility(
+        "Tela bloqueada. Use sua digital ou encolha entrar sem digital"
+      );
+    })();
+  }, []);
 
-            
+  const handleAuth = async () => {
+    try {
+      const res = await LocalAuthentication.authenticateAsync({
+        promptMessage: "Desbloquear com biometria",
+        cancelLabel: "Cancelar",
+        disableDeviceFallback: false,
+      });
+
       if (res.success) {
         AccessibilityInfo.announceForAccessibility("Desbloqueado com sucesso.");
         onUnlock();
@@ -46,50 +44,50 @@ export default function LockScreen({ theme, fontScale, bigTargets, onUnlock }) {
     }
   };
 
-  return(
-    <View style={styles.container}
-        accessible
-        accessibilityLabel="Tela de bloqueio"
+  return (
+    <View
+      style={styles.container}
+      accessible
+      accessibilityLabel="Tela de bloqueio"
     >
-        <Text
-        style={styles.lockEmoji} ccessibilityElementsHidden
-        >🔒
+      <Text style={styles.lockEmoji} accessibilityElementsHidden>
+        🔒
+      </Text>
+
+      <Text style={styles.title}>App Bloquead</Text>
+      <Text style={styles.subtitle}>
+        Por segurança, o conteúdo está oculto. Ecolha um forma de desbloquio.
+      </Text>
+
+      <BigButton
+        title="Desbloquear com digital"
+        onPress={handleAuth}
+        style={styles.authBtn}
+        textStyle={styles.authText}
+        accessibilityHint="Abre o prompt do sistema para leitura da sua biometria."
+      />
+
+      <BigButton
+        title="Entrar sem digital"
+        onPress={() => {
+          AccessibilityInfo.announceForAccessibility(
+            "Desbloqueado sem biometria"
+          );
+          onUnlock();
+        }}
+        style={[
+          styles.authBtn,
+          { backgroundColor: theme.success, marginTop: 12 },
+        ]}
+        textStyle={[styles.authText, { color: "#fff" }]}
+        accessibilityHint="Desbloqueia o aap sem usar digital."
+      />
+
+      {available === false && (
+        <Text style={styles.help}>
+          Biometria indisponível. Você pode entrar sem digital
         </Text>
-        <Text style={styles.title}>App Bloquado</Text>
-        <Text style={styles.subtitle}>Por segurança, o conteúdo está oculto. Ecolha um forma de desbloquio.</Text>
-
-        <BigButton
-            title="Desbloquear com digital"
-            onPress={handleAuth}
-            style={styles.authBtn}
-            textStyle={styles.authText}
-            accessibilityHint="Abre o prompt do sistema para leitura da sua biometria."
-        />
-
-        <BigButton
-            title="Entrar sem digital"
-            onPress={() =>{
-                AccessibilityInfo.announceForAccessibility("Desbloqueado sem biometria");
-                onUnlock();
-            }}
-            style={[
-                styles.authBtn, {backgroundColor: theme.success, marginTop: 12},
-            ]}
-            textStyle={[styles.authText, {color: "#fff"}]}
-            accessibilityHint="Desbloqueia o aap sem usar digital."
-        
-        />
-
-        {available === false && (
-            <Text
-            style={styles.help}
-            >Biometria indisponível. Você pode entrar sem digital</Text>
-        )}
-    
+      )}
     </View>
-  )
-
-
-
-  
+  );
 }
