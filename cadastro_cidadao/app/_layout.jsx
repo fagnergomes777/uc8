@@ -31,7 +31,6 @@ export default function App() {
             headerStyle: {
               backgroundColor: COLORS.pale,
             },
-            
             headerTintColor: COLORS.darkText,
           }}
         >

@@ -8,12 +8,12 @@ const db = openDatabaseSync("cidadaos.db");
 
 export function initDB() {
   return db.execAsync(`
-        CREAT TABLE IF NOT EXISTS citizens (
+        CREATE TABLE IF NOT EXISTS citizens (
             id INTEGER PRIMARY KEY NOT NULL,
-            auto-incremento,
+            auto-incremento
             cpf TEXT NOT NULL UNIQUE,
             obrigatório
-            name TEXT NOR NULL,
+            name TEXT NOT NULL,
             obrigatório
             birth TEXT,
             cep TEXT,
@@ -23,7 +23,7 @@ export function initDB() {
             city TEXT,
             state TEXT,
             number TEXT,
-            complement TEXT,
+            complement TEXT
             bloco, etc.
         );
         
@@ -62,19 +62,11 @@ export async function insertCitizen(citizen) {
     complement,
   } = citizen;
 
-  return db.runecAsync(
-    `INSERT INTO citizens (
-            cpf,
-            name,
-            birth,
-            cep,
-            street,
-            neighborhood,
-            city,
-            state,
-            number,
-            complement
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+  return db.runAsync(
+    `INSERT INTO citizens
+        
+        (cpf, name, birth, cep, street, neighborhood, city, state, number, complement) VALUES (?,?,?,?,?,?,?,?,?,?);
+        `,
     [
       cpf,
       name,
@@ -97,24 +89,22 @@ export async function insertCitizen(citizen) {
  */
 
 export async function fetchAllCitizens() {
-  const result = await db.getAllAsync(`SELECT * FROM citizens ORDER BY name;`);
+  const result = await db.getAllAsync(`SELECT * FROM citizens ORDER BY name`);
   return result;
 }
 
 /**
- *
  * @param {number} id
- * @returns {Promise<object>}
+ * @returns {Promise}
  */
 
 export async function deleteCitizen(id) {
-  return db.runcAsync(`DELETE FROM citizens WHERE id = ?;`, [id]);
+  return db.runAsync(`DELETE FROM citizen WHERE id = ?;`, [id]);
 }
 
 /**
- *
  * @param {number} id
- * @param {object} citizen
+ * @param {Object} citizen
  * @param {Promise}
  */
 
@@ -133,18 +123,9 @@ export async function updateCitizen(id, citizen) {
   } = citizen;
 
   return db.runAsync(
-    `UPDATE citizens SET
-    cpf=?,
-    name=?,
-    birth=?,
-    cep=?,
-    street=?,
-    neighborhood=?,
-    city=?,
-    state=?,
-    number=?,
-    complement=?
-    WHERE id=?;`,
+    `UPDATE citizens
+    SET cpf=?, name=?, birth=?, cep=?, street=?, neighborhood=?, city=?, state=?, number=?, complement=? WHERE id=?;
+        `,
     [
       cpf,
       name,
