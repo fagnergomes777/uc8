@@ -34,5 +34,5 @@ export default StyleSheet.create({
   saveText: {
     color: "#063E1F",
     fontWeight: "700",
-  }
+  },
 });

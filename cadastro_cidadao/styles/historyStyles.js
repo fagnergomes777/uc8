@@ -31,7 +31,6 @@ export default StyleSheet.create({
     marginTop: 4,
     fontSize: 12,
   },
-  // Novos estilos para o componente modernizado
   actionsBackground: {
     position: "absolute",
     right: 0,
@@ -62,7 +61,7 @@ export default StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
-  // Estilos antigos mantidos para compatibilidade
+
   rightActions: {
     flexDirection: "row",
     alignItems: "center",

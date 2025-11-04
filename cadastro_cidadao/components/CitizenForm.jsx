@@ -1,3 +1,4 @@
+// components/CitizenForm.jsx
 import React, { useState, useEffect } from "react";
 import {
   View,
@@ -7,12 +8,12 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
-import axios from "axios";
 import { insertCitizen, updateCitizen } from "../db/db";
-import { useNavigation, useRoute } from "@react-navigation/native";
-import { MaterialIcons } from "@expo/vector-icons";
-import { MaskedTextInput } from "react-native-mask-text";
 import styles from "../styles/cadastroFormStyles";
+import axios from "axios";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import { MaskedTextInput } from "react-native-mask-text";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export default function CitizenForm() {
   const nav = useNavigation();
@@ -34,42 +35,39 @@ export default function CitizenForm() {
   const [complement, setComplement] = useState(
     editing ? editing.complement : ""
   );
-  const [loading, setLoading] = useState(false);
+  const [loadingCep, setLoadingCep] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (cep && cep.replace(/\D/g, "").length === 8) {
-      fetch(cep.replace(/\D/g, ""));
+      fetchCep(cep.replace(/\D/g, ""));
     }
   }, [cep]);
 
-  // Função para verificar se o cep digitado está correto
-
-  async function fetch(cepOnlyNumbers) {
+  async function fetchCep(cepOnlyNumbers) {
     try {
-      setLoading(true);
+      setLoadingCep(true);
       const res = await axios.get(
         `https://viacep.com.br/ws/${cepOnlyNumbers}/json/`
       );
-
-      if (res.data.erro) {
+      if (res.data && !res.data.erro) {
         setStreet(res.data.logradouro || "");
         setNeighborhood(res.data.bairro || "");
         setCity(res.data.localidade || "");
         setState(res.data.uf || "");
       } else {
-        Alert.alert("CEP não encontrado", "Verifique o CEP digitado");
+        Alert.alert("CEP não encontrado", "Verifique o CEP digitado.");
       }
     } catch (_err) {
-      Alert.alert("Erro ao buscar CEP", "Verifique sua conexão");
+      Alert.alert("Erro ao buscar CEP", "Verifique sua conexão.");
     } finally {
-      setLoading(false);
+      setLoadingCep(false);
     }
   }
 
   async function onSave() {
     if (!cpf || !name) {
-      Alert.alert("Campos obrigatórios", "Preencha pelo menos o CPF e o Nome");
+      Alert.alert("Campos obrigatórios", "Preencha pelo menos CPF e nome.");
       return;
     }
     const citizen = {
@@ -88,16 +86,16 @@ export default function CitizenForm() {
       setSaving(true);
       if (id) {
         await updateCitizen(id, citizen);
-        Alert.alert("Atualizado", "Cadastro atualizado com sucesso!");
+        Alert.alert("Atualizado", "Cadastro atualizado com sucesso.");
       } else {
         await insertCitizen(citizen);
-        Alert.alert("Salvo", "Cadastro salvo com sucesso!");
+        Alert.alert("Salvo", "Cadastro salvo com sucesso.");
       }
-
       setCpf("");
       setName("");
       setBirth("");
       setCep("");
+      setStreet("");
       setNeighborhood("");
       setCity("");
       setState("");
@@ -108,7 +106,7 @@ export default function CitizenForm() {
       console.log(err);
       Alert.alert(
         "Erro ao salvar",
-        "Verifique os dados e tente novamente. CPF já cadastrado"
+        "Verifique os dados e tente novamente. CPF pode já existir."
       );
     } finally {
       setSaving(false);
@@ -135,7 +133,7 @@ export default function CitizenForm() {
         placeholder="Nome completo"
       />
 
-      <Text style={styles.label}>Data de Nascimento</Text>
+      <Text style={styles.label}>Data de nascimento</Text>
       <MaskedTextInput
         mask="99/99/9999"
         value={birth}
@@ -155,13 +153,13 @@ export default function CitizenForm() {
           style={[styles.input, { flex: 1 }]}
           placeholder="00000-000"
         />
-        {loading ? (
+        {loadingCep ? (
           <ActivityIndicator style={{ marginLeft: 8 }} />
         ) : (
           <TouchableOpacity
             onPress={() => {
               const raw = (cep || "").replace(/\D/g, "");
-              if (raw.length === 8) fetch(raw);
+              if (raw.length === 8) fetchCep(raw);
               else Alert.alert("CEP inválido", "Digite 8 dígitos do CEP.");
             }}
           >
@@ -175,7 +173,7 @@ export default function CitizenForm() {
         )}
       </View>
 
-        <Text style={styles.label}>Logradouro</Text>
+      <Text style={styles.label}>Logradouro</Text>
       <TextInput
         value={street}
         onChangeText={setStreet}
@@ -189,6 +187,7 @@ export default function CitizenForm() {
         onChangeText={setNumber}
         style={styles.input}
         placeholder="Número"
+        keyboardType="numeric"
       />
 
       <Text style={styles.label}>Complemento</Text>
@@ -228,8 +227,10 @@ export default function CitizenForm() {
         onPress={onSave}
         activeOpacity={0.8}
       >
-        {saving ? (<ActivityIndicator color="#fff"/>):(
-            <Text style={styles.saveText}>Salvar</Text>
+        {saving ? (
+          <ActivityIndicator color="#fff" />
+        ) : (
+          <Text style={styles.saveText}>Salvar</Text>
         )}
       </TouchableOpacity>
     </View>

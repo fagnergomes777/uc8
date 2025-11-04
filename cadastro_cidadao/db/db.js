@@ -8,26 +8,20 @@ const db = openDatabaseSync("cidadaos.db");
 
 export function initDB() {
   return db.execAsync(`
-        CREATE TABLE IF NOT EXISTS citizens (
-            id INTEGER PRIMARY KEY NOT NULL,
-            auto-incremento
-            cpf TEXT NOT NULL UNIQUE,
-            obrigatório
-            name TEXT NOT NULL,
-            obrigatório
-            birth TEXT,
-            cep TEXT,
-            street TEXT,
-            av, etc.
-            neighborhood TEXT,
-            city TEXT,
-            state TEXT,
-            number TEXT,
-            complement TEXT
-            bloco, etc.
-        );
-        
-    `);
+    CREATE TABLE IF NOT EXISTS citizens (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      cpf TEXT NOT NULL UNIQUE,
+      name TEXT NOT NULL,
+      birth TEXT,
+      cep TEXT,
+      street TEXT,
+      neighborhood TEXT,
+      city TEXT,
+      state TEXT,
+      number TEXT,
+      complement TEXT
+    );
+  `);
 }
 
 /**
